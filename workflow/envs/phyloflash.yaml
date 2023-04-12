@@ -1,0 +1,6 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - phyloflash = 3.4.2

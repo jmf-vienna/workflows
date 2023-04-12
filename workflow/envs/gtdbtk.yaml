@@ -1,0 +1,10 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - gtdbtk = 2.2.4
+
+
+#MASH DB 
+MASHDB : /scratch/jmf/internal/Analyses_Jay/DBs

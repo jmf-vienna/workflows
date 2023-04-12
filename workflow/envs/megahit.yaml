@@ -1,0 +1,9 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - megahit = 1.2.9
+#used for reformating
+ - bbmap = 39.01
+

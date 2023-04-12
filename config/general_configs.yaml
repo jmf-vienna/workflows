@@ -1,0 +1,15 @@
+#This is the general config file that can be used with all workflows
+
+
+
+
+
+#In order to save time (hours per run), the GTDB-tk DB can be installed before running the commands
+#GTDB versions can be found here: https://ecogenomics.github.io/GTDBTk/installing/index.html#
+
+#The following commands can be used to download the DB
+#wget https://data.gtdb.ecogenomic.org/releases/latest/auxillary_files/gtdbtk_v2_data.tar.gz
+#tar xvzf gtdbtk_v2_data.tar.gz
+
+#You can add the path here
+GTDBPATH : /scratch/jmf/internal/Analyses_Jay/DBs/release207_v2
