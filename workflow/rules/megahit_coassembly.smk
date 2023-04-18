@@ -17,6 +17,6 @@ rule megahit_assembly:
 		LIST="$(sed 's/\(.*\),/\1 /' intermediates/list.txt)"
 		
 		#assemble with megahit
-		megahit --k-min 21 --k-max 91 --k-step 10 -t {threads} -m 500000000000 -o results/coassembly_megahit --12 LIST
+		megahit --k-min 21 --k-max 121 --k-step 10 -t {threads} -m 500000000000 -o results/coassembly_megahit --12 LIST
 		reformat.sh in=results/coassembly_megahit/final_contigs.fa out={output} minlength=1000
 		"""

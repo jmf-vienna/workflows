@@ -18,7 +18,7 @@ rule all:
 #convert all bams to fastq files
 rule bamtofq:
 	input:
-		"data/{sample}.bam"
+		"data/RNA/{sample}.bam"
 	output:
 		"intermediates/{sample}_R1.fastq.gz",
 		"intermediates/{sample}_R2.fastq.gz"
@@ -139,7 +139,7 @@ rule fastq_merge:
 		"intermediates/{sample}_R1.cleaned.fastq.gz",
 		"intermediates/{sample}_R2.cleaned.fastq.gz"
 	output:
-		"data/interleave/{sample}.interleave.fastq.gz"
+		"data/interleave_RNA/{sample}.interleave.fastq.gz"
 	threads: 16
 	conda:
 		"envs/bbmap.yaml"

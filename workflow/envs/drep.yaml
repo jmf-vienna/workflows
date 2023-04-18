@@ -4,3 +4,5 @@ channels:
  - conda
 dependencies:
  - drep = 3.4.2
+ - checkm-genome = 1.2.2
+ - pandas = 1.5.1

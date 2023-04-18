@@ -13,7 +13,7 @@ rule megahit_assembly:
 		rm -r results/{sample}_megahit
 		
 		#assemble individual fastqs with megahit
-		megahit --k-min 21 --k-max 91 --k-step 10 -t {threads} -m 500000000000 -o results/{wildcards.sample}_megahit --12 {input}
+		megahit --k-min 21 --k-max 121 --k-step 10 -t {threads} -m 500000000000 -o results/{wildcards.sample}_megahit --12 {input}
 		reformat.sh in=results/{wildcards.sample}_megahit/final_contigs.fa out={output} minlength=1000
 		"""
 
