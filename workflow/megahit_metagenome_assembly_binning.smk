@@ -83,7 +83,7 @@ rule metabat_cov:
 		"""
 		if [ ! -d "results/{wildcards.sample}_megahit/metabat_cov" ]; then mkdir results/{wildcards.sample}_megahit/metabat_cov; fi
 		jgi_summarize_bam_contig_depths --outputDepth results/{wildcards.sample}_megahit/metabat_cov/depth.txt results/{wildcards.sample}_megahit/bams/*sorted.bam
-		metabat2 -i {input[0]} -o results/{wildcards.sample}_megahit/metabat_cov/metabat_cov -m 1500 -t 8 2> {log}
+		metabat2 -i {input[0]} -o results/{wildcards.sample}_megahit/metabat_cov/metabat_cov -m 1500 -t {threads} -a results/{wildcards.sample}_megahit/metabat_cov/depth.txt 2> {log}
 		"""
 
 #Concoct with coverage
