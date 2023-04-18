@@ -6,6 +6,7 @@ These workflows are designed to be run on a SLURM-based server system with snake
 For reproducibility these directories are designed around snakemake's directory structure (found here: https://snakemake.readthedocs.io/en/stable/snakefiles/deployment.html) 
 
 That looks like this:
+```
 ├── .gitignore
 ├── README.md
 ├── LICENSE.md
@@ -31,16 +32,28 @@ That looks like this:
 │   └── some-sheet.tsv
 ├── results
 └── resources
-
-
-
-In general this can be run like this: 
-
 ```
-#module load conda
-#module load snakemake
-snakemake -cores <threads> -s <snakemake workflow/rule -j10>
+
+
+In general snakemake workflows/rules can be run like this:
+
+**For a system with modules**
 ```
+module load conda
+module load snakemake
+snakemake -cores <total available threads> -s <snakemake workflow/rule> -j10
+```
+If you are not using this on a using with modules, please ignore the "module load" commands. 
+
+
+**To submit the entire workflow or rule to a slurm-based workflow manager**
+```
+workflows/scripts/runSnakemake.sh <workflow/rule>
+```
+The `runSnakemake.sh` will submit all workflow jobs to the servers as needed. 
+
+
+
 
 
 More workflows will be added soon, along with more description on how to use them!
