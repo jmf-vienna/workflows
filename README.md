@@ -27,14 +27,40 @@ That looks like this:
 |   │   ├── plot1.rst
 |   │   └── plot2.rst
 |   └── Snakefile
+├── log
+├── intermediates
 ├── config
 │   ├── config.yaml
 │   └── some-sheet.tsv
+├── data
+│   ├── DNA
+│   ├── RNA
+│   ├── NP
+│   └── ref
 ├── results
 └── resources
 ```
 
-But don't worry, this will be a set up script soon. 
+But don't worry, you can set this entire thing up like this:
+```
+mkdir <desired directory name>
+cd <desired directory name>
+
+#clone this repo
+git clone https://github.com/osvatic/JMF_independent_workflows.git .
+
+#make the rest of the directories
+mkdir data
+mkdir data/DNA
+mkdir data/RNA
+mkdir data/ref
+mkdir data/NP
+mkdir log
+mkdir intermediates
+mkdir results
+mkdir resources
+
+```
 
 In general snakemake workflows/rules can be run like this:
 
@@ -54,6 +80,7 @@ sbatch workflows/scripts/runSnakemake.sh <workflow/rule>
 The `runSnakemake.sh` will submit all workflow jobs to the servers as needed. 
 
 
-More workflows will be added soon, along with more description on how to use them!
+Details on workflows will be added shortly
+
 
 Please feel free to share comments/issues/suggestions with me in anyway!
