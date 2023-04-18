@@ -34,13 +34,15 @@ That looks like this:
 └── resources
 ```
 
+But don't worry, this will be a set up script soon. 
+
 In general snakemake workflows/rules can be run like this:
 
 **For a system with modules**
 ```
 module load conda
 module load snakemake
-snakemake -cores <total available threads> -s <snakemake workflow/rule> -j10
+snakemake -cores <total available threads> -s <snakemake workflow/rule> -j10 --use-conda
 ```
 If you are not using this on a using with modules, please ignore the "module load" commands. 
 
