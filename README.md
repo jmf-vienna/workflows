@@ -68,7 +68,7 @@ In general snakemake workflows/rules can be run like this:
 ```
 module load conda
 module load snakemake
-snakemake -cores <total available threads> -s <snakemake workflow/rule> -j10 --use-conda
+snakemake --cores <total available threads> -s <snakemake workflow/rule> -j10 --use-conda
 ```
 If you are not using this on a using with modules, please ignore the "module load" commands. 
 
