@@ -36,11 +36,11 @@ That looks like this:
 
 In general this can be run like this: 
 
-`
+```
 #module load conda
 #module load snakemake
 snakemake -cores <threads> -s <snakemake workflow/rule -j10>
-`
+```
 
 
 More workflows will be added soon, along with more description on how to use them!
