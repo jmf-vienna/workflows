@@ -47,7 +47,7 @@ If you are not using this on a using with modules, please ignore the "module loa
 
 **To submit the entire workflow or rule to a slurm-based workflow manager**
 ```
-workflows/scripts/runSnakemake.sh <workflow/rule>
+sbatch workflows/scripts/runSnakemake.sh <workflow/rule>
 ```
 The `runSnakemake.sh` will submit all workflow jobs to the servers as needed. 
 
