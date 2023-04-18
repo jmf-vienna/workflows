@@ -10,14 +10,14 @@ That looks like this:
 ├── .gitignore
 ├── README.md
 ├── LICENSE.md
-├── **workflow**
-│   ├── **rules**
+├── workflow
+│   ├── rules
 |   │   ├── module1.smk
 |   │   └── module2.smk
-│   ├── **envs**
+│   ├── envs
 |   │   ├── tool1.yaml
 |   │   └── tool2.yaml
-│   ├── **scripts**
+│   ├── scripts
 |   │   ├── script1.py
 |   │   └── script2.R
 │   ├── notebooks
@@ -26,14 +26,13 @@ That looks like this:
 │   ├── report
 |   │   ├── plot1.rst
 |   │   └── plot2.rst
-|   └── **Snakefile**
-├── **config**
-│   ├── **config.yaml**
+|   └── Snakefile
+├── config
+│   ├── config.yaml
 │   └── some-sheet.tsv
 ├── results
 └── resources
 ```
-
 
 In general snakemake workflows/rules can be run like this:
 
@@ -51,9 +50,6 @@ If you are not using this on a using with modules, please ignore the "module loa
 workflows/scripts/runSnakemake.sh <workflow/rule>
 ```
 The `runSnakemake.sh` will submit all workflow jobs to the servers as needed. 
-
-
-
 
 
 More workflows will be added soon, along with more description on how to use them!
