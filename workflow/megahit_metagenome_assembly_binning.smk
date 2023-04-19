@@ -61,7 +61,7 @@ rule mapping_prep:
                 """
                 if [ ! -d "results/{wildcards.sample}_megahit/bams" ]; then mkdir results/{wildcards.sample}_megahit/bams; fi
                 
-                for f in data/interleave/*.interleave.fastq.gz; do g=${{f##*/}}; bbmap.sh -Xmx50g threads={threads} ref={input} nodisk minid=0.98 in=$f out=results/{wildcards.sample}_megahit/bams/${{g%%.interleave.fastq.gz}}.bam; done 2> {log}
+                for f in data/interleave/*.interleave.fastq.gz; do g=${{f##*/}}; bbmap.sh -Xmx50g threads={threads} ref={input} interleaved=true nodisk minid=0.98 in=$f out=results/{wildcards.sample}_megahit/bams/${{g%%.interleave.fastq.gz}}.bam; done 2> {log}
 
                 #now we need to sort the bams
                 for f in results/{wildcards.sample}_megahit/bams/*bam; do samtools sort --write-index -@ {threads} -O BAM -o ${{f%%.bam}}.sorted.bam $f; done

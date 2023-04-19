@@ -1,0 +1,8 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - flye = 2.9.2
+ - seqtk = 1.3
+
