@@ -56,12 +56,11 @@ rule mapping_prep:
 	conda:
 		"envs/bbmap_samtools.yaml"
 	resources: mem_mb=50000, time="1-00:00:00"
-	log: "log/mapping_{sample}.log"
 	shell:
                 """
                 if [ ! -d "results/{wildcards.sample}_spades/bams" ]; then mkdir results/{wildcards.sample}_spades/bams; fi
                 
-                for f in data/interleave/*.interleave.fastq.gz; do g=${{f##*/}}; bbmap.sh -Xmx50g threads={threads} ref={input} interleaved=true nodisk minid=0.98 in=$f out=results/{wildcards.sample}_spades/bams/${{g%%.interleave.fastq.gz}}.bam; done 2> {log}
+                bbmap.sh -Xmx50g threads={threads} ref={input} interleaved=true nodisk minid=0.98 in=data/interleave/{wildcards.sample}.interleave.fastq.gz out=results/{wildcards.sample}_spades/bams/{wildcards.sample}.bam
 
                 #now we need to sort the bams
                 for f in results/{wildcards.sample}_spades/bams/*bam; do samtools sort --write-index -@ {threads} -O BAM -o ${{f%%.bam}}.sorted.bam $f; done
@@ -86,42 +85,15 @@ rule metabat_cov:
 		metabat2 -i {input[0]} -o results/{wildcards.sample}_spades/metabat_cov/metabat_cov -m 1500 -t {threads} -a results/{wildcards.sample}_spades/metabat_cov/depth.txt 2> {log}
 		"""
 
-#Concoct with coverage
-rule concoct:
-	input:
-		"results/{sample}_spades/scaffolds_1000bp.fa",
-		"results/{sample}_spades/bams/"
-	output:
-		directory("results/{sample}_spades/concoct/fasta_bins/")
-	threads: 1
-	conda:
-		"envs/concoct.yaml"
-	resources: mem_mb=50000, time="1-00:00:00"
-	log: "log/concoct_{sample}.log"
-	shell:
-                """
-                if [ ! -d "results/{wildcards.sample}_spades/concoct" ]; then mkdir results/{wildcards.sample}_spades/concoct; fi
-
-                cut_up_fasta.py {input[0]} -c 10000 -o 0 --merge_last -b results/{wildcards.sample}_spades/concoct/contigs_10K.bed > results/{wildcards.sample}_spades/concoct/contigs_10K.fa
-                concoct_coverage_table.py results/{wildcards.sample}_spades/concoct/contigs_10K.bed results/{wildcards.sample}_spades/bams/*.sorted.bam > results/{wildcards.sample}_spades/concoct/coverage_table.tsv 2> {log}
-
-                #concoct only likes to run on 1 thread
-                concoct --composition_file results/{wildcards.sample}_spades/concoct/contigs_10K.fa --coverage_file results/{wildcards.sample}_spades/concoct/coverage_table.tsv -b results/spades_assembly/concoct --threads 1 2>> {log}
-                merge_cutup_clustering.py results/{wildcards.sample}_spades/concoct/clustering_gt1000.csv > results/{wildcards.sample}_spades/concoct/clustering_merged.csv 2>> {log}
-
-                if [ ! -d "results/{wildcards.sample}_spades/concoct/fasta_bins" ]; then mkdir results/{wildcards.sample}_spades/concoct/fasta_bins; fi
-                extract_fasta_bins.py {input[0]} results/{wildcards.sample}_spades/concoct/clustering_merged.csv --output_path results/{wildcards.sample}_spades/concoct/fasta_bins 2>> {log}
-                """
 
 #A quick dREP
 rule drep:
 	input:
 		"results/{sample}_spades/metabat_nocov/",
-		"results/{sample}_spades/metabat_cov/",
-		"results/{sample}_spades/concoct/fasta_bins/"
+		"results/{sample}_spades/metabat_cov/"
 
 	output:
-		"results/{sample}_spades/final_bins/data_tables/genomeInformation.csv"
+		"results/{sample}_spades/final_bins/data_tables/genomeInfo.csv"
 	threads: 8
 	conda:
 		"envs/drep.yaml"
@@ -132,12 +104,10 @@ rule drep:
                 if [ ! -d "results/{wildcards.sample}_spades/final_bins" ]; then mkdir results/{wildcards.sample}_spades/final_bins; fi
                 cp results/{wildcards.sample}_spades/metabat_cov/metabat_cov*fa results/{wildcards.sample}_spades/final_bins
                 cp results/{wildcards.sample}_spades/metabat_nocov/metabat_nocov*fa results/{wildcards.sample}_spades/final_bins
-                cp results/{wildcards.sample}_spades/concoct/fasta_bins/*fa results/{wildcards.sample}_spades/final_bins
 
                 dRep dereplicate results/{wildcards.sample}_spades/final_bins/ -p {threads} -g results/{wildcards.sample}_spades/final_bins/*fa 2> {log}
                 
                 """
-
 
 rule gtdb_binning_setup:
 	input:
@@ -153,9 +123,6 @@ rule gtdb_binning_setup:
 		conda env config vars set GTDBTK_DATA_PATH={config[GTDBPATH]}
 		touch {output}
 		"""
-
-
-
 #reanalyze things
 #at this point lets aim for gtdb and add to the dREP
 rule gtdb_binning:
@@ -163,17 +130,17 @@ rule gtdb_binning:
 		"results/{sample}_spades/final_bins/data_tables/genomeInformation.csv",
 		"results/{sample}_spades/final_bins/GTDB_env.txt"
 	output:
-		"results/{sample}_spades/final_bins/dereplicated_genomes/final_QC.csv"
+		"results/{sample}_spades/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv"
 	threads: 16
 	conda:
 		"envs/gtdbtk.yaml"
 	resources: mem_mb=10000, time="1-00:00:00"
 	log: "log/gtdbtk_{sample}.log"
 	shell:
-		"""
+                """
 		gtdbtk classify_wf --extension fa --cpus {threads} --genome_dir results/{wildcards.sample}_spades/final_bins/dereplicated_genomes --out_dir results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/gtdb_classification --skip_ani_screen 2> {log}
-		mv results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/gtdb_classification/classify/gtdbtk.bac120.summary.tsv results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv
-		"""
+                mv results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/gtdb_classification/classify/gtdbtk.bac120.summary.tsv results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv
+                """
 
 
 rule drep_gtbd_merge:
@@ -187,6 +154,7 @@ rule drep_gtbd_merge:
 	threads: 1
 	resources: mem_mb=10000, time="1-00:00:00"
 	shell:
-		"""
-		python3 workflow/scripts/derep_gtdb_merge.py {input[0]} {input[1]} {output}
-		"""
+	"""
+	python3 workflow/scripts/derep_gtdb_merge.py {input[0]} {input[1]} {output}
+	"""
+

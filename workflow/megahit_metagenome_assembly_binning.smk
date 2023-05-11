@@ -8,7 +8,7 @@ configfile: "config/general_configs.yaml"
 #This rule is just here to "request" the final results and set everything into motion
 rule complete:
 	input:
-		expand("results/{name}_megahit/final_bins/dereplicated_genomes/final_QC.csv", name=NAMES)
+		expand("results/{name}_megahit/final_bins/dereplicated_genomes/final_QC.xlsx", name=NAMES)
 
 
 #Assemble with SPAdes using interleaved reads, will only keep >1000bp contigs
@@ -20,13 +20,14 @@ rule megahit_assembly:
 	threads: 48
 	conda:
 		"envs/megahit.yaml"
-	resources: mem_mb=500000, time="4-00:00:00", partition="himem"
+	resources: mem_mb=500000, time="4-00:00:00"
 	shell:
 		"""
 		rm -r results/{wildcards.sample}_megahit
 		megahit --k-min 21 --k-max 91 --k-step 10 -t {threads} -m 500000000000 -o results/{wildcards.sample}_megahit --12 {input}
 		reformat.sh in=results/{wildcards.sample}_megahit/final.contigs.fa out={output} minlength=1000
 		"""
+
 
 #BINNING 
 #binning without coverage input
@@ -121,7 +122,7 @@ rule drep:
 		"results/{sample}_megahit/concoct/fasta_bins/"
 
 	output:
-		"results/{sample}_megahit/final_bins/data_tables/genomeInfo.csv"
+		"results/{sample}_megahit/final_bins/data_tables/genomeInformation.csv"
 	threads: 16
 	conda:
 		"envs/drep.yaml"
@@ -139,13 +140,30 @@ rule drep:
                 """
 
 
+rule gtdb_binning_setup:
+	input:
+		"results/{sample}_megahit/final_bins/data_tables/genomeInformation.csv"
+	output:
+		"results/{sample}_megahit/final_bins/GTDB_env.txt"
+	threads: 1
+	conda:
+		"envs/gtdbtk.yaml"
+	resources: mem_mb=1000, time="1-00:00:00"
+	shell:
+		"""
+		conda env config vars set GTDBTK_DATA_PATH={config[GTDBPATH]}
+		touch {output}
+		"""
+
+
 #reanalyze things
 #at this point lets aim for gtdb and add to the dREP
 rule gtdb_binning:
 	input:
-		"results/{sample}_megahit/final_bins/data_tables/genomeInfo.csv"
+		"results/{sample}_megahit/final_bins/data_tables/genomeInformation.csv",
+		"results/{sample}_megahit/final_bins/GTDB_env.txt"
 	output:
-		"results/{sample}_megahit/final_bins/dereplicated_genomes/final_QC.csv"
+		"results/{sample}_megahit/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv"
 	threads: 16
 	conda:
 		"envs/gtdbtk.yaml"
@@ -153,12 +171,22 @@ rule gtdb_binning:
 	log: "log/gtdbtk_{sample}.log"
 	shell:
                 """
-		conda env config vars set GTDBTK_DATA_PATH={config[GTDBPATH]}
 		gtdbtk classify_wf --extension fa --cpus {threads} --genome_dir results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes --out_dir results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes/gtdb_classification --skip_ani_screen 2> {log}
                 mv results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes/gtdb_classification/classify/gtdbtk.bac120.summary.tsv results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv
-
-                #make final csv
-                echo "genome,completeness,contamination,strain_hetero,length,N50,GTDB_id" > results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes/final_QC.csv
-
-                for f in results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes/*fa; do g=${{f##*/}}; DREP="$(grep "^$g" results/{wildcards.sample}_megahit/final_bins/data_tables/genomeInfo.csv)"; GTD="$(grep "^${{g%%.fa}}" results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv | cut -f2)"; echo "${{DREP}},${{GTD}}" >> results/{wildcards.sample}_megahit/final_bins/dereplicated_genomes/final_QC.csv; done
                 """
+
+
+rule drep_gtbd_merge:
+	input:
+		"results/{sample}_megahit/final_bins/data_tables/genomeInformation.csv",
+		"results/{sample}_megahit/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv"
+	output:
+		"results/{sample}_megahit/final_bins/dereplicated_genomes/final_QC.xlsx"
+	conda: 
+		"workflow/envs/python3_modules.yaml"
+	threads: 1
+	resources: mem_mb=10000, time="1-00:00:00"
+	shell:
+		"""
+		python3 workflow/scripts/derep_gtdb_merge.py {input[0]} {input[1]} {output}
+		"""

@@ -14,7 +14,6 @@ module load conda
 snakemake --snakefile $1 --cluster "sbatch --mem {resources.mem_mb}\
                                                   --cpus-per-task {threads}\
                                                   --time={resources.time}\
-							--partition={resources.partition}\
                                                   --output=log/slurm_{rule}-%A.out\
                                                   --error=log/slurm_{rule}-%A.err"\
                                 --jobs 20\

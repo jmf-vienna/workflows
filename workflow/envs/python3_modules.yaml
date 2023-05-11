@@ -1,0 +1,7 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - pandas
+ - openpyxl
