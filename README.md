@@ -85,11 +85,17 @@ The `runSnakemake.sh` will submit all workflow jobs to the servers as needed.
 
 
 ## Details on individual workflows
-### Starting from bam files
-qc_DNA_frombam_nonmedical.smk
-qc_DNA_frombam_medical.smk
+
+### Quality checking, adapter and phiX removal from bam files
+These workflows can be used with paired-end (1 bam file) illumina reads in the data/DNA directory. The workflow will clean all .bam files and use the sample name from data/DNA/sample.bam to label the output interleaved fastq.gz. The final readsets witll be in data/interleave_DNA.
+
+For environmental samples (non-medical):
+`qc_DNA_frombam_nonmedical.smk`
+For medical samples (removes reads aligned to mouse, rat and human genomes):
+`qc_DNA_frombam_medical.smk`
 
 
+Similarly, RNA files can be processed from data/RNA. This is a 
 qc_RNA_frombam_medical.smk
 qc_RNA_frombam_nonmedical.smk
 
