@@ -130,7 +130,9 @@ For isolate (or very low diversity) assembly and binning with only the sample's 
 
 #### Output
 Final MAGs (high quality ones) can be found here: **results/{sample}_spades/final_bins_rebin/dereplicated_genomes/**
+
 A quality and taxonomy excel file can be found here for all of these final MAGs: **results/{sample}_spades/final_bins_rebin/dereplicated_genomes/final_rebin_QC.xlsx**
+
 
 The workflows `megahit_metagenome_assembly_binning.smk` and `spades_metagenome_assembly_binning.smk` are not currently in use because they use concoct, which I cannot get to work at the moment. 
 
@@ -143,16 +145,27 @@ This is not the perfect set up as it wastes some time and computing power aligni
 
 #### Output
 Assemblies can be found here upon completion: **results/{sample}_spades/** 
+
 Final MAGs (high quality ones) can be found here: **results/{sample}_spades/final_bins/dereplicated_genomes/**
+
 A quality and taxonomy excel file can be found here for all of these final MAGs: **results/{sample}_spades/final_bins/dereplicated_genomes/final_QC.xlsx**
 
 
 ### Microbial Transcriptomic analysis
-S
+Files for RNA DESeq/edgeR analysis can be prepared using:
 `transcriptome_featurecounts_generation.smk`
+
+Bacterial MAGs or Assemblies can be added to **data/ref** with the ending .fa and RNA readsets can be added to **/data/interleave_RNA** (should be in there if you used the above RNA workflows). 
+This workflow will annotation all MAGs in data/ref using PROKKA and align all readsets to them using bbmap and generate the appropriate FeatureCounts tables. 
+
+#### Output: 
+The FeatureCounts tables can be found here: "results/FeatureCounts/{genome}.featurecounts.tsv"
+
+The PROKKA annotations can be found here: data/ref/{genome name}
 
 
 ## Comments and questions
 
 Please feel free to share comments/issues/suggestions with me.
+
 
