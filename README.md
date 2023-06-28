@@ -91,6 +91,7 @@ These workflows can be used with paired-end (1 bam file) illumina reads in the d
 
 For environmental samples (non-medical):
 `qc_DNA_frombam_nonmedical.smk`
+
 For medical samples (removes reads aligned to mouse, rat and human genomes):
 `qc_DNA_frombam_medical.smk`
 
@@ -99,6 +100,7 @@ Similarly, RNA files can be processed from data/RNA. This workflow is similar to
 
 For environmental samples (non-medical):
 `qc_RNA_frombam_nonmedical.smk`
+
 For medical samples (removes reads aligned to mouse, rat and human genomes):
 `qc_RNA_frombam_medical.smk`
 
@@ -108,6 +110,7 @@ These workflows can be used with paired-end (split files) illumina reads in the 
 
 For environmental samples (non-medical):
 `qc_DNA_fromsplitfq_nonmedical.smk`
+
 For medical samples (removes reads aligned to mouse, rat and human genomes):
 `qc_DNA_fromsplitfq_medical.smk`
 
