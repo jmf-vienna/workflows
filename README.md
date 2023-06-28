@@ -163,6 +163,8 @@ The FeatureCounts tables can be found here: "results/FeatureCounts/{genome}.feat
 
 The PROKKA annotations can be found here: data/ref/{genome name}
 
+## Coming soon
+Nanopore workflows
 
 ## Comments and questions
 
