@@ -1,7 +1,7 @@
 #This script will take interleave paired-end DNA libraries from .bam files to interleaved .fastq.gz files. It will also remove human, mouse, and rat sequences
 
 #grab names for samples from data directory
-FILES = glob_wildcards('data/DNA/{name}.bam')
+FILES = glob_wildcards('data/DNA/{name}.1.fastq.gz')
 NAMES = FILES.name
 
 
@@ -9,38 +9,20 @@ NAMES = FILES.name
 rule all:
 	input:
 		expand("data/interleave_DNA/{sample}.interleave.fastq.gz", sample=NAMES),
-		expand("intermediates/prefilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
-		expand("intermediates/prefilter_qc/{sample}_R2_fastqc.html", sample=NAMES),
+		expand("intermediates/prefilter_qc/{sample}.1_fastqc.html", sample=NAMES),
+		expand("intermediates/prefilter_qc/{sample}.2_fastqc.html", sample=NAMES),
 		expand("intermediates/postfilter_qc/{sample}_R1.cleaned_fastqc.html", sample=NAMES),
 		expand("intermediates/postfilter_qc/{sample}_R2.cleaned_fastqc.html", sample=NAMES)
-
-
-#convert all bams to fastq files
-rule bamtofq:
-	input:
-		"data/DNA/{sample}.bam"
-	output:
-		"intermediates/{sample}_R1.fastq.gz",
-		"intermediates/{sample}_R2.fastq.gz"
-	conda:
-		"envs/samtools.yaml"
-	threads: 16
-	resources: mem_mb=10000, time="1-00:00:00"
-	shell:
-		"""
-		whereis samtools
-		samtools bam2fq --threads {threads} -1 intermediates/{wildcards.sample}_R1.fastq.gz -2 intermediates/{wildcards.sample}_R2.fastq.gz {input}
-		"""
 
 
 #Fastqc for each fq in intermediates
 rule fastqc_prefilter:
         input:
-                "intermediates/{sample}_R1.fastq.gz",
-		"intermediates/{sample}_R2.fastq.gz"
+                "data/DNA/{sample}.1.fastq.gz",
+		"data/DNA/{sample}.2.fastq.gz"
         output:
-                "intermediates/prefilter_qc/{sample}_R1_fastqc.html",
-		"intermediates/prefilter_qc/{sample}_R2_fastqc.html"
+                "intermediates/prefilter_qc/{sample}.1_fastqc.html",
+		"intermediates/prefilter_qc/{sample}.2_fastqc.html"
         conda: "envs/fastqc.yaml"
 	threads: 16
 	resources: mem_mb=10000, time="1-00:00:00"
@@ -55,8 +37,8 @@ rule fastqc_prefilter:
 #we are keeping reads seperate until the end for some processing reasons (fastqc, mostly)
 rule bbduk_trimadapters:
 	input:
-		"intermediates/{sample}_R1.fastq.gz",
-		"intermediates/{sample}_R2.fastq.gz"
+		"data/DNA/{sample}.1.fastq.gz",
+		"data/DNA/{sample}.2.fastq.gz"
 	output:
 		"intermediates/{sample}_R1.adapterclean.fastq.gz",
 		"intermediates/{sample}_R2.adapterclean.fastq.gz"
@@ -101,7 +83,7 @@ rule remove_host:
 	threads: 16
 	conda:
 		"envs/bbmap.yaml"
-	resources: mem_mb=50000, time="1-00:00:00"
+	resources: mem_mb=60000, time="1-00:00:00"
 	shell:
 		"""
 		#human

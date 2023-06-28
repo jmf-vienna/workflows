@@ -1,18 +1,18 @@
 #This script will take interleave paired-end RNA libraries from .bam files to interleaved .fastq.gz files. It will also remove human, mouse, and rat sequences
 
 #grab names for samples from data directory
-FILES = glob_wildcards('data/{name}.bam')
+FILES = glob_wildcards('data/RNA/{name}.bam')
 NAMES = FILES.name
 
 
 #Request all necessary outputs. For this workflow these are a interleave .fastq.gz and corresponding fastqc files 
 rule all:
 	input:
-		expand("data/interleave/{sample}.interleave.fastq.gz", sample=NAMES),
+		expand("data/interleave_RNA/{sample}.interleave.fastq.gz", sample=NAMES),
 		expand("intermediates/prefilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
 		expand("intermediates/prefilter_qc/{sample}_R2_fastqc.html", sample=NAMES),
-		expand("intermediates/postfilter_qc/{sample}_R1.phiXclean_fastqc.html", sample=NAMES),
-		expand("intermediates/postfilter_qc/{sample}_R2.phiXclean_fastqc.html", sample=NAMES)
+		expand("intermediates/postfilter_qc/{sample}_R1.cleaned_fastqc.html", sample=NAMES),
+		expand("intermediates/postfilter_qc/{sample}_R2.cleaned_fastqc.html", sample=NAMES)
 
 
 #convert all bams to fastq files
@@ -146,6 +146,6 @@ rule fastq_merge:
 	resources: mem_mb=10000, time="1-00:00:00"
 	shell:
 		"""	
-		if [ ! -d "data/interleave" ]; then mkdir data/interleave; fi
+		if [ ! -d "data/interleave_RNA" ]; then mkdir data/interleave_RNA; fi
 		reformat.sh threads={threads} in1={input[0]} in2={input[1]} out={output}
 		"""

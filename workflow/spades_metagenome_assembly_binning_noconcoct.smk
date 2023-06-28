@@ -1,6 +1,6 @@
 #workflow for spades assembler and binning process afterwards. It will 
 
-FILES = glob_wildcards('data/interleave/{name}.interleave.fastq.gz')
+FILES = glob_wildcards('data/interleave_DNA/{name}.interleave.fastq.gz')
 NAMES = FILES.name
 
 configfile: "config/general_configs.yaml"
@@ -8,13 +8,13 @@ configfile: "config/general_configs.yaml"
 #This rule is just here to "request" the final results and set everything into motion
 rule complete:
 	input:
-		expand("results/{name}_spades/final_bins/dereplicated_genomes/final_QC.csv", name=NAMES)
+		expand("results/{name}_spades/final_bins/dereplicated_genomes/final_QC.xlsx", name=NAMES)
 
 
 #Assemble with SPAdes using interleaved reads, will only keep >1000bp contigs
 rule SPAdes_assembly:
 	input:
-		"data/interleave/{sample}.interleave.fastq.gz"
+		"data/interleave_DNA/{sample}.interleave.fastq.gz"
 	output:
 		"results/{sample}_spades/scaffolds_1000bp.fa"
 	threads: 48
@@ -24,7 +24,7 @@ rule SPAdes_assembly:
 	log: "log/SPADES_{sample}.log"
 	shell:
 		"""
-		spades.py -t {threads} -m 500 -k 21,31,41,51,61,71,81,91 --meta --pe-12 1 {input} -o results/{wildcards.sample}_spades 2> {log}
+		spades.py -t {threads} -m 500 -k 21,31,41,51,61,71,81,91,101,111,121 --meta --pe-12 1 {input} -o results/{wildcards.sample}_spades 2> {log}
 		reformat.sh in=results/{wildcards.sample}_spades/scaffolds.fasta out={output} minlength=1000
 		"""
 
@@ -61,7 +61,7 @@ rule mapping_prep:
                 """
                 if [ ! -d "results/{wildcards.sample}_spades/bams" ]; then mkdir results/{wildcards.sample}_spades/bams; fi
                 
-                for f in data/interleave/*.interleave.fastq.gz; do g=${{f##*/}}; bbmap.sh -Xmx50g threads={threads} ref={input} interleaved=true nodisk minid=0.98 in=$f out=results/{wildcards.sample}_spades/bams/${{g%%.interleave.fastq.gz}}.bam; done 2> {log}
+                for f in data/interleave_DNA/*.interleave.fastq.gz; do g=${{f##*/}}; bbmap.sh -Xmx50g threads={threads} ref={input} interleaved=true nodisk minid=0.98 in=$f out=results/{wildcards.sample}_spades/bams/${{g%%.interleave.fastq.gz}}.bam; done 2> {log}
 
                 #now we need to sort the bams
                 for f in results/{wildcards.sample}_spades/bams/*bam; do samtools sort --write-index -@ {threads} -O BAM -o ${{f%%.bam}}.sorted.bam $f; done
@@ -94,7 +94,7 @@ rule drep:
 		"results/{sample}_spades/metabat_cov/"
 
 	output:
-		"results/{sample}_spades/final_bins/data_tables/genomeInfo.csv"
+		"results/{sample}_spades/final_bins/data_tables/genomeInformation.csv"
 	threads: 8
 	conda:
 		"envs/drep.yaml"
@@ -152,7 +152,7 @@ rule drep_gtbd_merge:
 	output:
 		"results/{sample}_spades/final_bins/dereplicated_genomes/final_QC.xlsx"
 	conda:
-		"workflow/envs/python3_modules.yaml"
+		"envs/python3_modules.yaml"
 	threads: 1
 	resources: mem_mb=10000, time="1-00:00:00"
 	shell:

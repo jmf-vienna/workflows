@@ -1,14 +1,14 @@
 #This script will take interleave paired-end DNA libraries from .bam files to interleaved .fastq.gz files
 
 #grab names for samples from data directory
-FILES = glob_wildcards('data/{name}.bam')
+FILES = glob_wildcards('data/DNA/{name}.bam')
 NAMES = FILES.name
 
 
 #Request all necessary outputs. For this workflow these are a interleave .fastq.gz and corresponding fastqc files 
 rule all:
 	input:
-		expand("data/interleave/{sample}.interleave.fastq.gz", sample=NAMES),
+		expand("data/interleave_DNA/{sample}.interleave.fastq.gz", sample=NAMES),
 		expand("intermediates/prefilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
 		expand("intermediates/prefilter_qc/{sample}_R2_fastqc.html", sample=NAMES),
 		expand("intermediates/postfilter_qc/{sample}_R1.phiXclean_fastqc.html", sample=NAMES),
@@ -118,6 +118,6 @@ rule fastq_merge:
 	resources: mem_mb=10000, time="1-00:00:00"
 	shell:
 		"""	
-		if [ ! -d "data/interleave" ]; then mkdir data/interleave; fi
+		if [ ! -d "data/interleave_DNA" ]; then mkdir data/interleave_DNA; fi
 		reformat.sh threads={threads} in1={input[0]} in2={input[1]} out={output}
 		"""

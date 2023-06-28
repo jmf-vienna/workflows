@@ -24,7 +24,7 @@ rule SPAdes_assembly:
 	log: "log/SPADES_{sample}.log"
 	shell:
 		"""
-		spades.py -t {threads} -m 500 -k 21,31,41,51,61,71,81,91,101,111,121 --meta --pe-12 1 {input} -o results/{wildcards.sample}_spades 2> {log}
+		spades.py -t {threads} -m 500 -k 21,31,41,51,61,71,81,91,101,111,121 --isolate --pe-12 1 {input} -o results/{wildcards.sample}_spades 2> {log}
 		reformat.sh in=results/{wildcards.sample}_spades/scaffolds.fasta out={output} minlength=1000
 		"""
 
