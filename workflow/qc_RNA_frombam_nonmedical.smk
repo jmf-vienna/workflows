@@ -1,14 +1,14 @@
 #This script will take interleave paired-end RNA libraries (higher qualtiy threshold than DNA) from .bam files to interleaved .fastq.gz files
 
 #grab names for samples from data directory
-FILES = glob_wildcards('data/{name}.bam')
+FILES = glob_wildcards('data/RNA/{name}.bam')
 NAMES = FILES.name
 
 
 #Request all necessary outputs. For this workflow these are a interleave .fastq.gz and corresponding fastqc files 
 rule all:
 	input:
-		expand("data/interleave/{sample}.interleave.fastq.gz", sample=NAMES),
+		expand("data/interleave_RNA/{sample}.interleave.fastq.gz", sample=NAMES),
 		expand("intermediates/prefilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
 		expand("intermediates/prefilter_qc/{sample}_R2_fastqc.html", sample=NAMES),
 		expand("intermediates/postfilter_qc/{sample}_R1.phiXclean_fastqc.html", sample=NAMES),
@@ -25,7 +25,7 @@ rule bamtofq:
 	conda:
 		"envs/samtools.yaml"
 	threads: 16
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=10000, time="0-02:00:00"
 	shell:
 		"""
 		samtools bam2fq --threads {threads} -1 intermediates/{wildcards.sample}_R1.fastq.gz -2 intermediates/{wildcards.sample}_R2.fastq.gz {input}
@@ -42,7 +42,7 @@ rule fastqc_prefilter:
 		"intermediates/prefilter_qc/{sample}_R2_fastqc.html"
         conda: "envs/fastqc.yaml"
 	threads: 16
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=10000, time="0-02:00:00"
         shell:
                 """
                 if [ ! -d "intermediates/prefilter_qc" ]; then mkdir intermediates/prefilter_qc; fi
@@ -62,7 +62,7 @@ rule bbduk_trimadapters:
 	threads: 16
 	conda:
 		"envs/bbmap.yaml"
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=10000, time="0-04:00:00"
 	shell:
 		"""
                 bbduk.sh threads={threads} -Xmx10g in1={input[0]} in2={input[1]} out1={output[0]} out2={output[1]} ref=adapters ktrim=r k=21 mink=11 hdist=2 tpe tbo 
@@ -80,7 +80,7 @@ rule bbduk_removephiX:
 	threads: 16
 	conda:
 		"envs/bbmap.yaml"
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=10000, time="0-04:00:00"
 	shell: 
                 """
                 bbduk.sh threads={threads} -Xmx10g in1={input[0]} in2={input[1]} out1={output[0]} out2={output[1]} ref=phix ktrim=r k=21 mink=11 hdist=2 minlen=50 qtrim=r trimq=28
@@ -97,7 +97,7 @@ rule fastqc_postfilter:
 	threads: 16
 	conda:
 		"envs/fastqc.yaml"
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=10000, time="0-02:00:00"
 	shell:
 		"""
 		if [ ! -d "intermediates/postfilter_qc" ]; then mkdir intermediates/postfilter_qc; fi
@@ -115,9 +115,9 @@ rule fastq_merge:
 	threads: 16
 	conda:
 		"envs/bbmap.yaml"
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=10000, time="0-02:00:00"
 	shell:
 		"""	
-		if [ ! -d "data/interleave" ]; then mkdir data/interleave_RNA; fi
+		if [ ! -d "data/interleave_RNA" ]; then mkdir data/interleave_RNA; fi
 		reformat.sh threads={threads} in1={input[0]} in2={input[1]} out={output}
 		"""
