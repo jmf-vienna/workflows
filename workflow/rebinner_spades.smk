@@ -31,7 +31,7 @@ rule metabat_cov:
 		"""
 		if [ ! -d "results/{wildcards.sample}_spades/metabat_cov_rebin" ]; then mkdir results/{wildcards.sample}_spades/metabat_cov_rebin; fi
 		jgi_summarize_bam_contig_depths --outputDepth results/{wildcards.sample}_spades/metabat_cov_rebin/depth.txt results/{wildcards.sample}_spades/bams_rebin/*sorted.bam
-		metabat2 -i {input[0]} -o results/{wildcards.sample}_spades/metabat_cov_rebin/metabat_cov -m 1500 -t {threads} -a results/{wildcards.sample}_spades/metabat_cov_rebin/depth.txt 2> {log}
+		metabat2 -i {input[0]} -o results/{wildcards.sample}_spades/metabat_cov_rebin/{wildcards.sample}_metabat_cov -m 1500 -t {threads} -a results/{wildcards.sample}_spades/metabat_cov_rebin/depth.txt 2> {log}
 		"""
 
 
@@ -51,8 +51,8 @@ rule drep:
 	shell:
                 """
                 if [ ! -d "results/{wildcards.sample}_spades/final_bins_rebin" ]; then mkdir results/{wildcards.sample}_spades/final_bins_rebin; fi
-                cp results/{wildcards.sample}_spades/metabat_cov_rebin/metabat_cov*fa results/{wildcards.sample}_spades/final_bins_rebin
-                cp results/{wildcards.sample}_spades/metabat_nocov/metabat_nocov*fa results/{wildcards.sample}_spades/final_bins_rebin
+                cp results/{wildcards.sample}_spades/metabat_cov_rebin/{wildcards.sample}_metabat_cov*fa results/{wildcards.sample}_spades/final_bins_rebin
+                cp results/{wildcards.sample}_spades/metabat_nocov/{wildcards.sample}_metabat_nocov*fa results/{wildcards.sample}_spades/final_bins_rebin
 
                 dRep dereplicate results/{wildcards.sample}_spades/final_bins_rebin/ -p {threads} -g results/{wildcards.sample}_spades/final_bins_rebin/*fa 2> {log}
                 

@@ -44,7 +44,7 @@ rule metabat_nocov:
 	shell:
                 """
                 if [ ! -d "results/{wildcards.sample}_megahit/metabat_nocov" ]; then mkdir results/{wildcards.sample}_megahit/metabat_nocov; fi
-                metabat2 -m 1500 -t {threads} -i {input} -o results/{wildcards.sample}_megahit/metabat_nocov/metabat_nocov 2> {log}
+                metabat2 -m 1500 -t {threads} -i {input} -o results/{wildcards.sample}_megahit/metabat_nocov/{wildcards.sample}_metabat_nocov 2> {log}
                 """
 
 #mapping prep for the binning programs
@@ -84,7 +84,7 @@ rule metabat_cov:
 		"""
 		if [ ! -d "results/{wildcards.sample}_megahit/metabat_cov" ]; then mkdir results/{wildcards.sample}_megahit/metabat_cov; fi
 		jgi_summarize_bam_contig_depths --outputDepth results/{wildcards.sample}_megahit/metabat_cov/depth.txt results/{wildcards.sample}_megahit/bams/*sorted.bam
-		metabat2 -i {input[0]} -o results/{wildcards.sample}_megahit/metabat_cov/metabat_cov -m 1500 -t {threads} -a results/{wildcards.sample}_megahit/metabat_cov/depth.txt 2> {log}
+		metabat2 -i {input[0]} -o results/{wildcards.sample}_megahit/metabat_cov/{wildcards.sample}_metabat_cov -m 1500 -t {threads} -a results/{wildcards.sample}_megahit/metabat_cov/depth.txt 2> {log}
 		"""
 
 #Concoct with coverage
@@ -131,8 +131,8 @@ rule drep:
 	shell:
                 """
                 if [ ! -d "results/{wildcards.sample}_megahit/final_bins" ]; then mkdir results/{wildcards.sample}_megahit/final_bins; fi
-                cp results/{wildcards.sample}_megahit/metabat_cov/metabat_cov*fa results/{wildcards.sample}_megahit/final_bins
-                cp results/{wildcards.sample}_megahit/metabat_nocov/metabat_nocov*fa results/{wildcards.sample}_megahit/final_bins
+                cp results/{wildcards.sample}_megahit/metabat_cov/{wildcards.sample}_metabat_cov*fa results/{wildcards.sample}_megahit/final_bins
+                cp results/{wildcards.sample}_megahit/metabat_nocov/{wildcards.sample}_metabat_nocov*fa results/{wildcards.sample}_megahit/final_bins
                 cp results/{wildcards.sample}_megahit/concoct/fasta_bins/*fa results/{wildcards.sample}_megahit/final_bins
 
                 dRep dereplicate results/{wildcards.sample}_megahit/final_bins/ -p {threads} -g results/{wildcards.sample}_megahit/final_bins/*fa 2> {log}
