@@ -55,7 +55,7 @@ rule mapping_prep:
 	threads: 16
 	conda:
 		"envs/bbmap_samtools.yaml"
-	resources: mem_mb=50000, time="1-00:00:00"
+	resources: mem_mb=100000, time="3-00:00:00"
 	log: "log/mapping_{sample}.log"
 	shell:
                 """
@@ -98,7 +98,7 @@ rule drep:
 	threads: 8
 	conda:
 		"envs/drep.yaml"
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=200000, time="1-00:00:00"
 	log: "log/drep_{sample}.log"
 	shell:
                 """
@@ -124,8 +124,40 @@ rule gtdb_binning_setup:
 		conda env config vars set GTDBTK_DATA_PATH={config[GTDBPATH]}
 		touch {output}
 		"""
+#stats for each MAG
+rule MAG_stats:
+	input:
+		"results/{sample}_spades/final_bins/data_tables/genomeInformation.csv"
+	output:
+		"results/{sample}_spades/final_bins/dereplicated_genomes/complete_stats.tsv"
+	threads: 1
+	conda:
+		"envs/bbmap_samtools.yaml"
+	resources: mem_mb=10000, time="0-01:00:00"
+	log: "log/stats_{sample}.log"
+	shell:
+		"""
+		#generate stats file for each MAG
+		for f in results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/*fa;
+		do g=${{f##*/}};
+		stats.sh in=$f format=3 > ${{f%%.fa}}.stats.tsv;
+		echo 'genome' > ${{f%%.fa}}.name.txt;
+		echo "$g" >> ${{f%%.fa}}.name.txt;
+		paste -d'\t' ${{f%%.fa}}.name.txt ${{f%%.fa}}.stats.tsv > ${{f%%.fa}}.stats.merged.tsv;
+		rm ${{f%%.fa}}.stats.tsv;
+		rm ${{f%%.fa}}.name.txt;
+		done
+		
+		#get headers for stats
+		for f in results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/*stats.merged.tsv; do head -1 $f > results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/complete_stats.tsv ; done
+		
+		#merge all stats into 1 file
+		for f in results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/*stats.merged.tsv;
+		do tail -1 $f >> results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/complete_stats.tsv;
+		rm $f;
+		done
+		"""
 
-#reanalyze things
 #at this point lets aim for gtdb and add to the dREP
 rule gtdb_binning:
 	input:
@@ -136,7 +168,7 @@ rule gtdb_binning:
 	threads: 16
 	conda:
 		"envs/gtdbtk.yaml"
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=200000, time="1-00:00:00"
 	log: "log/gtdbtk_{sample}.log"
 	shell:
 		"""		
@@ -145,19 +177,20 @@ rule gtdb_binning:
 		"""
 
 
-rule drep_gtbd_merge:
+rule drep_stats_gtbd_merge:
 	input:
 		"results/{sample}_spades/final_bins/data_tables/genomeInformation.csv",
-		"results/{sample}_spades/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv"
+		"results/{sample}_spades/final_bins/dereplicated_genomes/gtdbtk.bac120.summary.tsv",
+		"results/{sample}_spades/final_bins/dereplicated_genomes/complete_stats.tsv"
 	output:
 		"results/{sample}_spades/final_bins/dereplicated_genomes/final_QC.xlsx"
 	conda:
 		"envs/python3_modules.yaml"
 	threads: 1
-	resources: mem_mb=10000, time="1-00:00:00"
+	resources: mem_mb=10000, time="0-00:10:00"
 	shell:
 		"""
-		python3 workflow/scripts/derep_gtdb_merge.py {input[0]} {input[1]} {output}
+		python3 workflow/scripts/derep_gtdb_stats_merge.py {input[0]} {input[1]} {input[2]} {output}
 		"""
 
 
