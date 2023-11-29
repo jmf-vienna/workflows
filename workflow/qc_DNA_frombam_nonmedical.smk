@@ -47,6 +47,7 @@ rule fastqc_prefilter:
                 """
                 if [ ! -d "intermediates/prefilter_qc" ]; then mkdir intermediates/prefilter_qc; fi
                 fastqc -t {threads} -o intermediates/prefilter_qc {input}
+		multiqc intermediates/prefilter_qc --outdir intermediates/prefilter_qc -f
                 """
 
 
@@ -102,6 +103,8 @@ rule fastqc_postfilter:
 		"""
 		if [ ! -d "intermediates/postfilter_qc" ]; then mkdir intermediates/postfilter_qc; fi
 		fastqc -t {threads} -o intermediates/postfilter_qc {input}
+		multiqc intermediates/postfilter_qc --outdir intermediates/postfilter_qc -f
+
 		"""
 
 
