@@ -3,4 +3,4 @@ channels:
  - conda-forge
  - conda
 dependencies:
- - fastqc = 0.12.1
+ - multiqc = 1.18
