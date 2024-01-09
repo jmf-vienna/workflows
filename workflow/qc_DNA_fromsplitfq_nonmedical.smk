@@ -11,10 +11,10 @@ rule all:
         expand("data/interleave_DNA/{sample}.interleave.fastq.gz", sample=NAMES),
         expand("intermediates/prefilter_qc/{sample}.1_fastqc.html", sample=NAMES),
         expand("intermediates/prefilter_qc/{sample}.2_fastqc.html", sample=NAMES),
-        expand("intermediates/postfilter_qc/{sample}_R1.phiXclean_fastqc.html", sample=NAMES),
-        expand("intermediates/postfilter_qc/{sample}_R2.phiXclean_fastqc.html", sample=NAMES)
-        "intermediates/prefilter_qc/multiqc.html",
-        "intermediates/postfilter_qc/multiqc.html"
+        expand("intermediates/postfilter_qc/{sample}.1.phiXclean_fastqc.html", sample=NAMES),
+        expand("intermediates/postfilter_qc/{sample}.2.phiXclean_fastqc.html", sample=NAMES),
+        "intermediates/prefilter_qc/multiqc_report.html",
+        "intermediates/postfilter_qc/multiqc_report.html"
 
 #Fastqc for each fq in intermediates
 rule fastqc_prefilter:
@@ -23,7 +23,7 @@ rule fastqc_prefilter:
         "data/DNA/{sample}.2.fastq.gz"
     output:
         "intermediates/prefilter_qc/{sample}.1_fastqc.html",
-		"intermediates/prefilter_qc/{sample}.2_fastqc.html"
+        "intermediates/prefilter_qc/{sample}.2_fastqc.html"
     conda: "envs/fastqc.yaml"
     threads: 16
     resources: mem_mb=10000, time="1-00:00:00"
@@ -36,10 +36,10 @@ rule fastqc_prefilter:
 #convert fastqcs to multiqc
 rule multiqc_prefilter:
     input:
-        expand("intermediates/prefilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
-        expand("intermediates/prefilter_qc/{sample}_R2_fastqc.html", sample=NAMES)
+        expand("intermediates/prefilter_qc/{sample}.1_fastqc.html", sample=NAMES),
+        expand("intermediates/prefilter_qc/{sample}.2_fastqc.html", sample=NAMES)
     output:
-        "intermediates/prefilter_qc/multiqc.html"
+        "intermediates/prefilter_qc/multiqc_report.html"
     conda: "envs/multiqc.yaml"
     threads: 1
     resources: mem_mb=10000, time="0-00:10:00"
@@ -57,8 +57,8 @@ rule bbduk_trimadapters:
         "data/DNA/{sample}.1.fastq.gz",
         "data/DNA/{sample}.2.fastq.gz"
     output:
-        "intermediates/{sample}_R1.adapterclean.fastq.gz",
-        "intermediates/{sample}_R2.adapterclean.fastq.gz"
+        "intermediates/{sample}.1.adapterclean.fastq.gz",
+        "intermediates/{sample}.2.adapterclean.fastq.gz"
     threads: 16
     conda:
         "envs/bbmap.yaml"
@@ -72,11 +72,11 @@ rule bbduk_trimadapters:
 #bbduk will remove phiX contamination
 rule bbduk_removephiX:
     input:
-        "intermediates/{sample}_R1.adapterclean.fastq.gz",
-        "intermediates/{sample}_R2.adapterclean.fastq.gz"
+        "intermediates/{sample}.1.adapterclean.fastq.gz",
+        "intermediates/{sample}.2.adapterclean.fastq.gz"
     output:
-        "intermediates/{sample}_R1.phiXclean.fastq.gz",
-        "intermediates/{sample}_R2.phiXclean.fastq.gz"
+        "intermediates/{sample}.1.phiXclean.fastq.gz",
+        "intermediates/{sample}.2.phiXclean.fastq.gz"
     threads: 16
     conda:
         "envs/bbmap.yaml"
@@ -89,11 +89,11 @@ rule bbduk_removephiX:
 #fastqc after all the filtering
 rule fastqc_postfilter:
     input:
-        "intermediates/{sample}_R1.phiXclean.fastq.gz",
-        "intermediates/{sample}_R2.phiXclean.fastq.gz"
+        "intermediates/{sample}.1.phiXclean.fastq.gz",
+        "intermediates/{sample}.2.phiXclean.fastq.gz"
     output:
-        "intermediates/postfilter_qc/{sample}_R1.phiXclean_fastqc.html",
-        "intermediates/postfilter_qc/{sample}_R2.phiXclean_fastqc.html"
+        "intermediates/postfilter_qc/{sample}.1.phiXclean_fastqc.html",
+        "intermediates/postfilter_qc/{sample}.2.phiXclean_fastqc.html"
     threads: 16
     conda:
         "envs/fastqc.yaml"
@@ -108,10 +108,10 @@ rule fastqc_postfilter:
 #convert fastqcs to multiqc
 rule multiqc_postfilter:
     input:
-        expand("intermediates/postfilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
-        expand("intermediates/postfilter_qc/{sample}_R2_fastqc.html", sample=NAMES)
+        expand("intermediates/postfilter_qc/{sample}.1.phiXclean_fastqc.html", sample=NAMES),
+        expand("intermediates/postfilter_qc/{sample}.2.phiXclean_fastqc.html", sample=NAMES)
     output:
-        "intermediates/postfilter_qc/multiqc.html"
+        "intermediates/postfilter_qc/multiqc_report.html"
     conda: "envs/multiqc.yaml"
     threads: 1
     resources: mem_mb=10000, time="0-00:10:00"
@@ -125,8 +125,8 @@ rule multiqc_postfilter:
 #bbmap's reformat.sh will merge the paired end reads into a single interleaved file for ease of processing
 rule fastq_merge:
     input:
-        "intermediates/{sample}_R1.phiXclean.fastq.gz",
-        "intermediates/{sample}_R2.phiXclean.fastq.gz"
+        "intermediates/{sample}.1.phiXclean.fastq.gz",
+        "intermediates/{sample}.2.phiXclean.fastq.gz"
     output:
         "data/interleave_DNA/{sample}.interleave.fastq.gz"
     threads: 16
