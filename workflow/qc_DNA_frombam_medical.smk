@@ -13,8 +13,8 @@ rule all:
         expand("intermediates/prefilter_qc/{sample}_R2_fastqc.html", sample=NAMES),
         expand("intermediates/postfilter_qc/{sample}_R1.cleaned_fastqc.html", sample=NAMES),
         expand("intermediates/postfilter_qc/{sample}_R2.cleaned_fastqc.html", sample=NAMES),
-        "intermediates/prefilter_qc/multiqc.html"
-
+        "intermediates/prefilter_qc/multiqc.html",
+        "intermediates/postfilter_qc/multiqc.html"
 
 #convert all bams to fastq files
 rule bamtofq:
@@ -145,6 +145,23 @@ rule fastqc_postfilter:
         """
         if [ ! -d "intermediates/postfilter_qc" ]; then mkdir intermediates/postfilter_qc; fi
         fastqc -t {threads} -o intermediates/postfilter_qc {input}
+        """
+
+
+#convert fastqcs to multiqc
+rule multiqc_postfilter:
+    input:
+        expand("intermediates/postfilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
+        expand("intermediates/postfilter_qc/{sample}_R2_fastqc.html", sample=NAMES)
+    output:
+        "intermediates/postfilter_qc/multiqc.html"
+    conda: "envs/multiqc.yaml"
+    threads: 1
+    resources: mem_mb=10000, time="0-00:10:00"
+    shell:
+        """
+        multiqc intermediates/postfilter_qc --outdir intermediates/postfilter_qc -f
+        #rm -r intermediates/postfilter_qc/*fastqc*
         """
 
 

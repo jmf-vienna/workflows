@@ -13,7 +13,8 @@ rule all:
         expand("intermediates/prefilter_qc/{sample}.2_fastqc.html", sample=NAMES),
         expand("intermediates/postfilter_qc/{sample}_R1.phiXclean_fastqc.html", sample=NAMES),
         expand("intermediates/postfilter_qc/{sample}_R2.phiXclean_fastqc.html", sample=NAMES)
-
+        "intermediates/prefilter_qc/multiqc.html",
+        "intermediates/postfilter_qc/multiqc.html"
 
 #Fastqc for each fq in intermediates
 rule fastqc_prefilter:
@@ -30,6 +31,22 @@ rule fastqc_prefilter:
         """
         if [ ! -d "intermediates/prefilter_qc" ]; then mkdir intermediates/prefilter_qc; fi
         fastqc -t {threads} -o intermediates/prefilter_qc {input}
+        """
+
+#convert fastqcs to multiqc
+rule multiqc_prefilter:
+    input:
+        expand("intermediates/prefilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
+        expand("intermediates/prefilter_qc/{sample}_R2_fastqc.html", sample=NAMES)
+    output:
+        "intermediates/prefilter_qc/multiqc.html"
+    conda: "envs/multiqc.yaml"
+    threads: 1
+    resources: mem_mb=10000, time="0-00:10:00"
+    shell:
+        """
+        multiqc intermediates/prefilter_qc --outdir intermediates/prefilter_qc -f
+        #rm -r intermediates/prefilter_qc/*fastqc*
         """
 
 
@@ -85,6 +102,23 @@ rule fastqc_postfilter:
         """
         if [ ! -d "intermediates/postfilter_qc" ]; then mkdir intermediates/postfilter_qc; fi
         fastqc -t {threads} -o intermediates/postfilter_qc {input}
+        """
+
+
+#convert fastqcs to multiqc
+rule multiqc_postfilter:
+    input:
+        expand("intermediates/postfilter_qc/{sample}_R1_fastqc.html", sample=NAMES),
+        expand("intermediates/postfilter_qc/{sample}_R2_fastqc.html", sample=NAMES)
+    output:
+        "intermediates/postfilter_qc/multiqc.html"
+    conda: "envs/multiqc.yaml"
+    threads: 1
+    resources: mem_mb=10000, time="0-00:10:00"
+    shell:
+        """
+        multiqc intermediates/postfilter_qc --outdir intermediates/postfilter_qc -f
+        #rm -r intermediates/postfilter_qc/*fastqc*
         """
 
 
