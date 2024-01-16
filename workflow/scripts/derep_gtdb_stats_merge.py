@@ -23,12 +23,12 @@ statsinfo_df = pd.read_table(statsinfo)
 gtdbtax_df['genome'] = gtdbtax_df['user_genome'].astype(str) + '.fa'
 
 #make new dfs with only columns we want
-geninfo_df_clean = geninfo_df.loc[:, ['genome', 'completeness', 'contamination', 'strain_heterogeneity', 'length', 'N50']]
+geninfo_df_clean = geninfo_df.loc[:, ['genome', 'completeness', 'contamination', 'strain_heterogeneity', 'length']]
 gtdbtax_df_clean = gtdbtax_df.loc[:, ['genome', 'classification']]
-statsinfo_df_clean = statsinfo_df.loc[:, ['genome', 'scaf_L50', 'scaf_N90', 'scaf_L90', 'scaf_max', 'gc_avg', 'gc_std']]
+statsinfo_df_clean = statsinfo_df.loc[:, ['genome', 'scaf_N50', 'scaf_L50', 'scaf_N90', 'scaf_L90', 'scaf_max', 'gc_avg', 'gc_std']]
 
 #rename some of the stats columns to be less confusing
-statsinfo_df_clean = statsinfo_df_clean.rename(columns={"scaf_L50" : "L50", "scaf_N90" : "N90", "scaf_L90" : "L90", "scaf_max" : "max_length"})
+statsinfo_df_clean = statsinfo_df_clean.rename(columns={"scaf_N50" : "N50", "scaf_L50" : "L50", "scaf_N90" : "N90", "scaf_L90" : "L90", "scaf_max" : "max_length"})
 
 #left join on GTDB, this is a bit arbitary
 joined_df = gtdbtax_df_clean.merge(geninfo_df_clean, on='genome', how='left')
