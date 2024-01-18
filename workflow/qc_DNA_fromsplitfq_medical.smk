@@ -39,7 +39,7 @@ rule multiqc_prefilter:
         expand("intermediates/prefilter_qc/{sample}.1_fastqc.html", sample=NAMES),
         expand("intermediates/prefilter_qc/{sample}.2_fastqc.html", sample=NAMES)
     output:
-        "intermediates/prefilter_qc/multiqc.html"
+        "intermediates/prefilter_qc/multiqc_report.html"
     conda: "envs/multiqc.yaml"
     threads: 1
     resources: mem_mb=10000, time="0-00:10:00"
