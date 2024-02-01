@@ -126,7 +126,7 @@ rule drep:
     threads: 16
     conda:
         "envs/drep.yaml"
-    resources: mem_mb=300000, time="1-00:00:00"
+    resources: mem_mb=200000, time="1-00:00:00"
     log: "log/drep_{sample}.log"
     shell:
         """
@@ -166,7 +166,7 @@ rule gtdb_binning:
     threads: 16
     conda:
         "envs/gtdbtk.yaml"
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=200000, time="2-00:00:00"
     log: "log/gtdbtk_{sample}.log"
     shell:
         """
