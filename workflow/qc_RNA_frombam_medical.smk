@@ -104,12 +104,33 @@ rule bbduk_removephiX:
         bbduk.sh threads={threads} -Xmx10g in1={input[0]} in2={input[1]} out1={output[0]} out2={output[1]} ref=phix ktrim=r k=21 mink=11 hdist=2 minlen=50 qtrim=r trimq=28
         """
 
+#download references for cleanup
+rule download_ref:
+    output:
+        "resources/GCF_000001405.40_GRCh38.p14_genomic.fna.gz",
+        "resources/GCF_000001635.27_GRCm39_genomic.fna.gz",
+        "resources/GCF_015227675.2_mRatBN7.2_genomic.fna.gz"
+    threads: 1
+    resources: mem_mb=100000, time="1-00:00:00"
+    shell:
+        """
+        #human
+        wget -P resources/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
+        #mouse
+        wget -P resources/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_genomic.fna.gz
+        #rat
+        wget -P resources/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/015/227/675/GCF_015227675.2_mRatBN7.2/GCF_015227675.2_mRatBN7.2_genomic.fna.gz
+        """
+
 
 
 #bbmap will remove human, rat, and mouse sequences to make things easier in the end
 #this is done in one step, using 3 commands. It can be adjusted to only remove certain fastas
 rule remove_host:
     input:
+        "resources/GCF_000001405.40_GRCh38.p14_genomic.fna.gz",
+        "resources/GCF_000001635.27_GRCm39_genomic.fna.gz",
+        "resources/GCF_015227675.2_mRatBN7.2_genomic.fna.gz",
         "intermediates/{sample}_R1.phiXclean.fastq.gz",
         "intermediates/{sample}_R2.phiXclean.fastq.gz"
     output:
@@ -122,13 +143,10 @@ rule remove_host:
     shell:
         """
         #human
-        wget -P resources/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/405/GCF_000001405.40_GRCh38.p14/GCF_000001405.40_GRCh38.p14_genomic.fna.gz
         bbmap.sh -Xmx50g threads={threads} ref=resources/GCF_000001405.40_GRCh38.p14_genomic.fna.gz nodisk minid=0.98 in1={input[0]} in2={input[1]} outu1=intermediates/{wildcards.sample}_R1.nohuman.fastq.gz outu2=intermediates/{wildcards.sample}_R2.nohuman.fastq.gz
         #mouse
-        wget -P resources/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/000/001/635/GCF_000001635.27_GRCm39/GCF_000001635.27_GRCm39_genomic.fna.gz 
         bbmap.sh -Xmx50g threads={threads} ref=resources/GCF_000001635.27_GRCm39_genomic.fna.gz nodisk minid=0.98 in1=intermediates/{wildcards.sample}_R1.nohuman.fastq.gz in2=intermediates/{wildcards.sample}_R2.nohuman.fastq.gz outu1=intermediates/{wildcards.sample}_R1.nomouse.fastq.gz outu2=intermediates/{wildcards.sample}_R2.nomouse.fastq.gz
         #rat
-        wget -P resources/ https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/015/227/675/GCF_015227675.2_mRatBN7.2/GCF_015227675.2_mRatBN7.2_genomic.fna.gz
         bbmap.sh -Xmx50g threads={threads} ref=resources/GCF_015227675.2_mRatBN7.2_genomic.fna.gz nodisk minid=0.98 in1=intermediates/{wildcards.sample}_R1.nomouse.fastq.gz in2=intermediates/{wildcards.sample}_R2.nomouse.fastq.gz outu1={output[0]} outu2={output[1]}
 		"""
 
