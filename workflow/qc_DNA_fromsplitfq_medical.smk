@@ -124,7 +124,7 @@ rule remove_host:
     shell:
         """
         #human
-        bbmap.sh -Xmx50g threads={threads} ref=resources/GCF_000001405.40_GRCh38.p14_genomic.fna.gz nodisk minid=0.98 in1={input[0]} in2={input[1]} outu1=intermediates/{wildcards.sample}_R1.nohuman.fastq.gz outu2=intermediates/{wildcards.sample}_R2.nohuman.fastq.gz
+        bbmap.sh -Xmx50g threads={threads} ref=resources/GCF_000001405.40_GRCh38.p14_genomic.fna.gz nodisk minid=0.98 in1={input[3]} in2={input[4]} outu1=intermediates/{wildcards.sample}_R1.nohuman.fastq.gz outu2=intermediates/{wildcards.sample}_R2.nohuman.fastq.gz
         #mouse
         bbmap.sh -Xmx50g threads={threads} ref=resources/GCF_000001635.27_GRCm39_genomic.fna.gz nodisk minid=0.98 in1=intermediates/{wildcards.sample}_R1.nohuman.fastq.gz in2=intermediates/{wildcards.sample}_R2.nohuman.fastq.gz outu1=intermediates/{wildcards.sample}_R1.nomouse.fastq.gz outu2=intermediates/{wildcards.sample}_R2.nomouse.fastq.gz
         #rat
