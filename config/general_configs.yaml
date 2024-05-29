@@ -12,4 +12,4 @@
 #tar xvzf gtdbtk_v2_data.tar.gz
 
 #You can add the path here
-GTDBPATH : /scratch/mirror/gtdbtk/r214
+GTDBPATH : /lisc/scratch/mirror/gtdbtk/r214

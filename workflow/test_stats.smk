@@ -8,7 +8,7 @@ rule mag_stats:
 	threads: 1
 	conda:
 		"envs/bbmap_samtools.yaml"
-	resources: mem_mb=50000, time="0-01:00:00"
+	resources: mem_mb=50000, time="0-01:00:00", partition="basic"
 	shell:
                 """
 		#generate stats file for each MAG
@@ -42,7 +42,7 @@ rule drep_gtbd_stats_merge:
 	conda:
 		"envs/python3_modules.yaml"
 	threads: 1
-	resources: mem_mb=10000, time="0-00:10:00"
+	resources: mem_mb=10000, time="0-00:10:00", partition="basic"
 	shell:
 		"""
 		python3 workflow/scripts/derep_gtdb_stats_merge.py {input[0]} {input[1]} {input[2]} {output}

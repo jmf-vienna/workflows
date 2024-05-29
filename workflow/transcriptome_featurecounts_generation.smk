@@ -24,7 +24,7 @@ rule PROKKA:
     threads: 8
     conda:
         "envs/prokka.yaml"
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         prokka --cpus {threads} --outdir data/ref/{wildcards.genome} --prefix {wildcards.genome} {input} --force
@@ -41,7 +41,7 @@ rule BBMAP_align:
     threads: 16
     conda:
         "envs/bbmap.yaml"
-    resources: mem_mb=50000, time="1-00:00:00"
+    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
     shell:
         """
         bbmap.sh -Xmx50g threads={threads} minid=0.99 ambiguous=best interleaved=true ref={input[0]} nodisk in={input[1]} out={output}
@@ -56,7 +56,7 @@ rule FeatureCounts:
     threads: 8
     conda:
         "envs/subread.yaml"
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         featureCounts -s 2 -p -T 8 -O -g ID -t CDS -a {input[0]} -o {output} data/ref/{wildcards.genome}_*.bam

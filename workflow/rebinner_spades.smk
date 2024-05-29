@@ -25,7 +25,7 @@ rule metabat_cov:
     threads: 8
     conda:
         "envs/metabat.yaml"
-    resources: mem_mb=50000, time="1-00:00:00"
+    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
     log: "log/metabat_{sample}.log"
     shell:
         """
@@ -46,7 +46,7 @@ rule drep:
     threads: 8
     conda:
         "envs/drep.yaml"
-    resources: mem_mb=200000, time="1-00:00:00"
+    resources: mem_mb=200000, time="1-00:00:00", partition="basic"
     log: "log/drep_{sample}.log"
     shell:
         """
@@ -66,7 +66,7 @@ rule MAG_stats:
     threads: 1
     conda:
         "envs/bbmap_samtools.yaml"
-    resources: mem_mb=10000, time="0-01:00:00"
+    resources: mem_mb=10000, time="0-01:00:00", partition="basic"
     log: "log/stats_{sample}.log"
     shell:
         """
@@ -99,7 +99,7 @@ rule gtdb_binning_setup:
     threads: 1
     conda:
         "envs/gtdbtk.yaml"
-    resources: mem_mb=1000, time="1-00:00:00"
+    resources: mem_mb=1000, time="1-00:00:00", partition="basic"
     shell:
         """
         conda env config vars set GTDBTK_DATA_PATH={config[GTDBPATH]}
@@ -117,7 +117,7 @@ rule gtdb_binning:
     threads: 16
     conda:
         "envs/gtdbtk.yaml"
-    resources: mem_mb=200000, time="2-00:00:00"
+    resources: mem_mb=200000, time="2-00:00:00", partition="basic"
     log: "log/gtdbtk_{sample}.log"
     shell:
         """
@@ -136,7 +136,7 @@ rule drep_gtbd_merge:
     conda:
         "envs/python3_modules.yaml"
     threads: 1
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         python3 workflow/scripts/derep_gtdb_stats_merge.py {input[0]} {input[1]} {input[2]} {output}

@@ -26,7 +26,7 @@ rule fastqc_prefilter:
         "intermediates/prefilter_qc/{sample}.2_fastqc.html"
     conda: "envs/fastqc.yaml"
     threads: 16
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         if [ ! -d "intermediates/prefilter_qc" ]; then mkdir intermediates/prefilter_qc; fi
@@ -42,7 +42,7 @@ rule multiqc_prefilter:
         "intermediates/prefilter_qc/multiqc_report.html"
     conda: "envs/multiqc.yaml"
     threads: 1
-    resources: mem_mb=10000, time="0-00:10:00"
+    resources: mem_mb=10000, time="0-00:10:00", partition="basic"
     shell:
         """
         multiqc intermediates/prefilter_qc --outdir intermediates/prefilter_qc -f
@@ -62,7 +62,7 @@ rule bbduk_trimadapters:
     threads: 16
     conda:
         "envs/bbmap.yaml"
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         bbduk.sh threads={threads} -Xmx10g in1={input[0]} in2={input[1]} out1={output[0]} out2={output[1]} ref=adapters ktrim=r k=21 mink=11 hdist=2 tpe tbo 
@@ -80,7 +80,7 @@ rule bbduk_removephiX:
     threads: 16
     conda:
         "envs/bbmap.yaml"
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         bbduk.sh threads={threads} -Xmx10g in1={input[0]} in2={input[1]} out1={output[0]} out2={output[1]} ref=phix ktrim=r k=21 mink=11 hdist=2 minlen=50 qtrim=r trimq=15
@@ -97,7 +97,7 @@ rule fastqc_postfilter:
     threads: 16
     conda:
         "envs/fastqc.yaml"
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         if [ ! -d "intermediates/postfilter_qc" ]; then mkdir intermediates/postfilter_qc; fi
@@ -114,7 +114,7 @@ rule multiqc_postfilter:
         "intermediates/postfilter_qc/multiqc_report.html"
     conda: "envs/multiqc.yaml"
     threads: 1
-    resources: mem_mb=10000, time="0-00:10:00"
+    resources: mem_mb=10000, time="0-00:10:00", partition="basic"
     shell:
         """
         multiqc intermediates/postfilter_qc --outdir intermediates/postfilter_qc -f
@@ -132,7 +132,7 @@ rule fastq_merge:
     threads: 16
     conda:
         "envs/bbmap.yaml"
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         if [ ! -d "data/interleave_DNA" ]; then mkdir data/interleave_DNA; fi

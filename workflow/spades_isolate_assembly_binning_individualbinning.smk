@@ -20,7 +20,7 @@ rule SPAdes_assembly:
     threads: 48
     conda:
         "envs/spades.yaml"
-    resources: mem_mb=500000, time="4-00:00:00"
+    resources: mem_mb=500000, time="4-00:00:00", partition="basic"
     log: "log/SPADES_{sample}.log"
     shell:
         """
@@ -38,7 +38,7 @@ rule metabat_nocov:
     threads: 8
     conda:
         "envs/metabat.yaml"
-    resources: mem_mb=50000, time="1-00:00:00"
+    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
     log: "log/metabatnocov_{sample}.log"
     shell:
         """
@@ -55,7 +55,7 @@ rule mapping_prep:
     threads: 16
     conda:
         "envs/bbmap_samtools.yaml"
-    resources: mem_mb=50000, time="1-00:00:00"
+    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
     shell:
         """
         if [ ! -d "results/{wildcards.sample}_spades/bams" ]; then mkdir results/{wildcards.sample}_spades/bams; fi
@@ -76,7 +76,7 @@ rule metabat_cov:
     threads: 8
     conda:
         "envs/metabat.yaml"
-    resources: mem_mb=50000, time="1-00:00:00"
+    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
     log: "log/metabat_{sample}.log"
     shell:
         """
@@ -97,7 +97,7 @@ rule drep:
     threads: 8
     conda:
         "envs/drep.yaml"
-    resources: mem_mb=200000, time="1-00:00:00"
+    resources: mem_mb=200000, time="1-00:00:00", partition="basic"
     log: "log/drep_{sample}.log"
     shell:
         """
@@ -116,7 +116,7 @@ rule gtdb_binning_setup:
     threads: 1
     conda:
         "envs/gtdbtk.yaml"
-    resources: mem_mb=1000, time="1-00:00:00"
+    resources: mem_mb=1000, time="1-00:00:00", partition="basic"
     shell:
         """
         conda env config vars set GTDBTK_DATA_PATH={config[GTDBPATH]}
@@ -133,7 +133,7 @@ rule gtdb_binning:
     threads: 16
     conda:
         "envs/gtdbtk.yaml"
-    resources: mem_mb=200000, time="1-00:00:00"
+    resources: mem_mb=200000, time="1-00:00:00", partition="basic"
     log: "log/gtdbtk_{sample}.log"
     shell:
         """
@@ -151,7 +151,7 @@ rule drep_gtbd_merge:
     conda:
         "envs/python3_modules.yaml"
     threads: 1
-    resources: mem_mb=10000, time="1-00:00:00"
+    resources: mem_mb=10000, time="1-00:00:00", partition="basic"
     shell:
         """
         python3 workflow/scripts/derep_gtdb_merge.py {input[0]} {input[1]} {output}
