@@ -3,5 +3,5 @@ channels:
  - conda-forge
  - conda
 dependencies:
- - bbmap = 39.01
- - samtools = 1.16.1
+ - bbmap = 39.06
+ - samtools = 1.20
