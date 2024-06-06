@@ -8,7 +8,7 @@
 #SBATCH --time=30-00:00:00
 
 #module load miniconda
-module load snakemake/8.10.4-3.12.2
+module load snakemake/8.12.0-3.12.3
 module load conda
 
 snakemake --snakefile $1 --executor cluster-generic --cluster-generic-submit-cmd "sbatch --mem {resources.mem_mb}\
