@@ -63,6 +63,20 @@ mkdir results
 mkdir resources
 
 ```
+## Installing snakemake
+Creating a conda environment with a stable form of snakemake will be very helpful for running these commands.
+
+I have created a conda environment for **snakemake v8.20.3** in order to keep things stable. 
+
+**Creating your own snakemake environment** (Must have conda installed)
+```
+#create environment
+conda create --name snakemake_v8.20.3
+#activate environment
+conda activate snakemake_v8.20.3
+#install snakemake
+conda install -c conda-forge -c bioconda snakemake=8.20.3
+```
 
 ## How to run
 In general snakemake workflows/rules can be run from the main directory ("desired directory name" from above) like this:
@@ -70,7 +84,7 @@ In general snakemake workflows/rules can be run from the main directory ("desire
 **For a system with modules**
 ```
 module load conda
-module load snakemake
+conda activate snakemake_v8.20.3
 snakemake --cores <total available threads> -s <snakemake workflow/rule> -j10 --use-conda
 ```
 If you are not using this on a using with modules, please ignore the "module load" commands.
