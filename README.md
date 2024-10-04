@@ -76,6 +76,9 @@ conda create --name snakemake_v8.20.3
 conda activate snakemake_v8.20.3
 #install snakemake
 conda install -c conda-forge -c bioconda snakemake=8.20.3
+
+#install SLURM specific plugin
+pip install snakemake-executor-plugin-slurm
 ```
 
 ## How to run
