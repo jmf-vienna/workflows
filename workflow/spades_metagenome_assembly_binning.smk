@@ -20,7 +20,7 @@ rule SPAdes_assembly:
     threads: 48
     conda:
         "envs/spades.yaml"
-    resources: mem_mb=500000, time="4-00:00:00", partition="basic"
+    resources: mem_mb=500000, runtime="1d", partition="basic"
     log: "log/SPADES_{sample}.log"
     shell:
         """
@@ -38,7 +38,7 @@ rule metabat_nocov:
     threads: 8
     conda:
         "envs/metabat.yaml"
-    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
+    resources: mem_mb=50000, runtime="1d", partition="basic"
     log: "log/metabatnocov_{sample}.log"
     shell:
         """
@@ -55,7 +55,7 @@ rule mapping_prep:
     threads: 16
     conda:
         "envs/bbmap_samtools.yaml"
-    resources: mem_mb=100000, time="3-00:00:00", partition="basic"
+    resources: mem_mb=100000, runtime="3d", partition="basic"
     log: "log/mapping_{sample}.log"
     shell:
         """
@@ -77,7 +77,7 @@ rule metabat_cov:
     threads: 8
     conda:
         "envs/metabat.yaml"
-    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
+    resources: mem_mb=50000, runtime="1d", partition="basic"
     log: "log/metabat_{sample}.log"
     shell:
         """
@@ -96,9 +96,9 @@ rule drep:
     output:
         "results/{sample}_spades/final_bins/data_tables/genomeInformation.csv"
     threads: 8
-    conda:
-        "envs/drep.yaml"
-    resources: mem_mb=200000, time="1-00:00:00", partition="basic"
+#    conda:
+#        "envs/drep.yaml"
+    resources: mem_mb=200000, runtime="1d", partition="basic"
     log: "log/drep_{sample}.log"
     shell:
         """
@@ -106,8 +106,11 @@ rule drep:
         cp results/{wildcards.sample}_spades/metabat_cov/{wildcards.sample}_metabat_cov*fa results/{wildcards.sample}_spades/final_bins
         cp results/{wildcards.sample}_spades/metabat_nocov/{wildcards.sample}_metabat_nocov*fa results/{wildcards.sample}_spades/final_bins
 
+        module load conda
+        conda activate drep-3.5.0
+
         dRep dereplicate results/{wildcards.sample}_spades/final_bins/ -p {threads} -g results/{wildcards.sample}_spades/final_bins/*fa 2> {log}
-                """
+        """
 
 rule gtdb_binning_setup:
     input:
@@ -117,7 +120,7 @@ rule gtdb_binning_setup:
     threads: 1
     conda:
         "envs/gtdbtk.yaml"
-    resources: mem_mb=1000, time="1-00:00:00", partition="basic"
+    resources: mem_mb=1000, runtime="1d", partition="basic"
     shell:
         """
         conda env config vars set GTDBTK_DATA_PATH={config[GTDBPATH]}
@@ -132,7 +135,7 @@ rule MAG_stats:
     threads: 1
     conda:
         "envs/bbmap_samtools.yaml"
-    resources: mem_mb=10000, time="0-01:00:00", partition="basic"
+    resources: mem_mb=10000, runtime="1d", partition="basic"
     log: "log/stats_{sample}.log"
     shell:
         """
@@ -167,7 +170,7 @@ rule gtdb_binning:
     threads: 16
     conda:
         "envs/gtdbtk.yaml"
-    resources: mem_mb=200000, time="1-00:00:00", partition="basic"
+    resources: mem_mb=200000, runtime="1d", partition="basic"
     log: "log/gtdbtk_{sample}.log"
     shell:
         """
@@ -186,8 +189,8 @@ rule drep_stats_gtbd_merge:
     conda:
         "envs/python3_modules.yaml"
     threads: 1
-    resources: mem_mb=10000, time="0-00:10:00", partition="basic"
+    resources: mem_mb=10000, runtime="1h", partition="basic"
     shell:
         """
-        python3 workflow/scripts/derep_gtdb_stats_merge.py {input[0]} {input[1]} {input[2]} {output}
+        python3 workflow/scripts/derep_gtdb_stats_merge.py {input[0]} {input[1]} results/{wildcards.sample}_spades/final_bins/dereplicated_genomes/gtdb_classification/gtdbtk.ar53.summary.tsv {input[2]} {output}
         """

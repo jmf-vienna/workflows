@@ -1,0 +1,6 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - singlem = 0.20.3

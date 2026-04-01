@@ -3,6 +3,6 @@ channels:
  - conda-forge
  - conda
 dependencies:
- - spades = 4.0.0
+ - spades = 4.2.0
 #used for reformating
- - bbmap = 39.06
+ - bbmap = 39.37

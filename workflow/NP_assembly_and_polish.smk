@@ -20,7 +20,7 @@ rule flye_assembly:
     threads: 32
     conda:
         "envs/flye.yaml"
-    resources: mem_mb=100000, time="4-00:00:00", partition="basic"
+    resources: mem_mb=100000, runtime="1d", partition="basic"
     shell:
         """
         flye --nano-hq {input} --threads {threads} --meta --out-dir results/{wildcards.sample}_flye
@@ -36,7 +36,7 @@ rule medaka_polish:
     threads: 8
     conda:
         "envs/medaka.yaml"
-    resources: mem_mb=100000, time="4-00:00:00", partition="basic"
+    resources: mem_mb=100000, runtime="1d", partition="basic"
     shell:
         """
         MEDAKAMODEL=r1041_e82_400bps_sup_g615

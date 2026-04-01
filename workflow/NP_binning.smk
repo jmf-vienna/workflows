@@ -21,7 +21,7 @@ rule minimap:
     threads: 16
     conda:
         "envs/minimap.yaml"
-    resources: mem_mb=100000, time="4-00:00:00", partition="basic"
+    resources: mem_mb=100000, runtime="1d", partition="basic"
     shell:
         """
         if [ ! -d "results/{wildcards.sample}_flye/mapping" ]; then mkdir results/{wildcards.sample}_flye/mapping; fi
@@ -38,7 +38,7 @@ rule metabat:
     threads: 16
     conda:
         "envs/metabat.yaml"
-    resources: mem_mb=100000, time="4-00:00:00", partition="basic"
+    resources: mem_mb=100000, runtime="1d", partition="basic"
     shell:
         """
         jgi_summarize_bam_contig_depths --percentIdentity 80 --outputDepth results/{wildcards.sample}_flye/mapping/depth.txt results/{wildcards.sample}_flye/mapping/*.np.cov.bam
@@ -53,7 +53,7 @@ rule checkm:
     threads: 16
     conda:
         "envs/checkm_genome.yaml"
-    resources: mem_mb=50000, time="1-00:00:00", partition="basic"
+    resources: mem_mb=50000, runtime="1d", partition="basic"
     shell:
         """
         checkm lineage_wf -t {threads} --pplacer_threads {threads} -f {output} -x fa {input} {input}/checkm

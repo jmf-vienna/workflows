@@ -1,0 +1,6 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - nonpareil = 3.5.3

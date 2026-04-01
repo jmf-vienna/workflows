@@ -3,8 +3,9 @@ channels:
  - conda-forge
  - conda
 dependencies:
- - gtdbtk = 2.4.0
+ - gtdbtk = 2.5.2
+ - python = 3.12
 
 
 #MASH DB 
-MASHDB : /scratch/jmf/internal/Analyses_Jay/DBs
+#MASHDB : /scratch/jmf/internal/Analyses_Jay/DBs

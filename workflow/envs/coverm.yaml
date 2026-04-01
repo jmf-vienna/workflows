@@ -1,0 +1,6 @@
+channels:
+ - bioconda
+ - conda-forge
+ - conda
+dependencies:
+ - coverm = 0.7.0

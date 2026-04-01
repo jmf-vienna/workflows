@@ -3,6 +3,4 @@ channels:
  - conda-forge
  - conda
 dependencies:
- - drep = 3.5.0
- - checkm-genome = 1.2.2
- - pandas = 2.2.2
+ - drep = 3.6.2
