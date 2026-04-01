@@ -49,7 +49,7 @@ mkdir <desired directory name>
 cd <desired directory name>
 
 #clone this repo
-git clone https://github.com/osvatic/JMF_independent_workflows.git .
+git clone https://github.com/jmf-vienna/workflows .
 
 #make the rest of the directories
 mkdir data
