@@ -1,5 +1,8 @@
 # JMF independent workflows 
-This repository contains dependency-independent workflows that can be shared and used on Joint Microbiome Facility (University of Vienna and Medical University of Vienna) generated data.
+This repository contains workflows that work on the LISC in Vienna. They are designed to be MOSTLY dependency-independent but for some programs (dREP, CHECKM2, etc) that wasn't possible. 
+
+This can be shared and used on Joint Microbiome Facility (University of Vienna and Medical University of Vienna) generated data.
+
 It is regularly changed (for now) and that frequently results in some broken code... sorry. 
 
 These workflows are designed to be run on a SLURM-based server system with snakemake but should be able to run on any linux system as all of the dependencies are installed using bioconda through snakemake.
@@ -61,24 +64,24 @@ mkdir log
 mkdir intermediates
 mkdir results
 mkdir resources
-
 ```
+
 ## Installing snakemake
 Creating a conda environment with a stable form of snakemake will be very helpful for running these commands.
 
-I have created a conda environment for **snakemake v8.20.3** in order to keep things stable. 
+I have created a conda environment for **snakemake v9.19.0** in order to keep things stable. 
 
 **Creating your own snakemake environment** (Must have conda installed)
 ```
 #create environment
-conda create --name snakemake_v8.20.3
+conda create --name snakemake_v9.19.0
 #activate environment
-conda activate snakemake_v8.20.3
+conda activate snakemake_v9.19.0
 #install snakemake
-conda install -c conda-forge -c bioconda snakemake=8.20.3
+conda install -c conda-forge -c bioconda snakemake=9.19.0
 
 #install SLURM specific plugin
-pip install snakemake-executor-plugin-slurm
+pip install snakemake-executor-plugin-slurm #not sure if this is needed with snakemake v9
 ```
 
 ## How to run
@@ -87,7 +90,7 @@ In general snakemake workflows/rules can be run from the main directory ("desire
 **For a system with modules**
 ```
 module load conda
-conda activate snakemake_v8.20.3
+conda activate snakemake_v9.19.0
 snakemake --cores <total available threads> -s <snakemake workflow/rule> -j10 --use-conda
 ```
 If you are not using this on a using with modules, please ignore the "module load" commands.
@@ -99,6 +102,8 @@ In that case you need to have conda and snakemake installed and accessible.
 sbatch workflows/scripts/runSnakemake.sh <workflow/rule>
 ```
 The `runSnakemake.sh` will submit all workflow jobs to the servers as needed. 
+
+
 
 
 ## Details on individual workflows
