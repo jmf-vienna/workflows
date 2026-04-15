@@ -1,0 +1,76 @@
+---
+title: "MERGE"
+output: html_document
+date: "2026-04-14"
+---
+
+#load libs
+```{r}
+library(tidyverse)
+```
+
+#setwd
+```{r}
+setwd("/lisc/data/scratch/jmf/internal/Analyses_Jay/JMF_2511_11/results/ALL_MAGs/derep_MAGs/")
+```
+
+
+#load all files
+```{r}
+#gtdb bac
+gtdbbac <- read_delim("gtdb_classification/gtdbtk.bac120.summary.tsv")
+#gtdb arc
+gtdbarc <- read_delim("gtdb_classification/gtdbtk.ar53.summary.tsv")
+
+#checkm2
+checkm <- read_delim("../checkm2_out/quality_report.tsv")
+
+#stats
+stats <- read_delim("complete_stats.tsv")
+
+#coverM
+coverMmean <- read_delim("coverM_mean_output.tsv")
+#coverM
+coverMrelative <- read_delim("coverM_relative_output.tsv")
+```
+
+#merge gtdb
+```{r}
+#clean up things
+gtdbbac_clean <- gtdbbac %>% select(user_genome, classification)
+gtdbarc_clean <- gtdbarc %>% select(user_genome, classification)
+
+gtdbmerged <- bind_rows(gtdbbac_clean, gtdbarc_clean)
+
+#rename first column to "genome"
+gtdbmerged <- gtdbmerged %>% rename(genome = user_genome)
+```
+
+#add checkm2
+```{r}
+#rename Name to genome
+checkm <- checkm %>% rename(genome = Name)
+
+#merge
+mergedtable <- left_join(gtdbmerged, checkm, by = "genome")
+```
+
+#add stats THIS IS NOT NEEDED, ALL COVERED BY CHECKM2
+
+#add coverage
+```{r}
+#rename Genome to genome
+coverMmean <- coverMmean %>% rename(genome = Genome)
+coverMrelative <- coverMrelative %>% rename(genome = Genome)
+
+#add relative
+mergedtable <- full_join(mergedtable, coverMrelative, by = "genome" )
+
+#add coverage
+mergedtable <- full_join(mergedtable, coverMmean, by = "genome" )
+```
+
+#file out
+```{r}
+write_excel_csv(mergedtable, "JMF-2511-11_MAGS.xlsx")
+```
