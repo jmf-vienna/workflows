@@ -13,6 +13,6 @@ rule SPAdes_assembly:
     log: "log/SPADES_{sample}.log"
     shell:
         """
-        spades.py -t {threads} -m 750 -k 21,31,41,51,61,71,81,91,101,111,121 --meta --tmp-dir $TMPDIR --pe-12 1 {input} -o results/{wildcards.sample}_spades 2> {log}
+        spades.py -t {threads} -m 750 -k 21,31,41,51,61,71,81,91,101,111,121 --metaviral --tmp-dir $TMPDIR --pe-12 1 {input} -o results/{wildcards.sample}_spades 2> {log}
         reformat.sh in=results/{wildcards.sample}_spades/scaffolds.fasta out={output} minlength=1000
         """
