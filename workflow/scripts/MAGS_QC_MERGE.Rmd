@@ -7,31 +7,29 @@ date: "2026-04-14"
 #load libs
 ```{r}
 library(tidyverse)
+library(writexl)
 ```
 
 #setwd
-```{r}
-setwd("/lisc/data/scratch/jmf/internal/Analyses_Jay/JMF_2511_11/results/ALL_MAGs/derep_MAGs/")
-```
+#```{r}
+#setwd("/lisc/data/scratch/jmf/internal/Analyses_Jay/JMF_2511_11/results/ALL_MAGs/derep_MAGs/")
+#```
 
 
 #load all files
 ```{r}
 #gtdb bac
-gtdbbac <- read_delim("gtdb_classification/gtdbtk.bac120.summary.tsv")
+gtdbbac <- read_delim("results/FULL_MAGs/dereplicated_MAGs/gtdb_classification/gtdbtk.bac120.summary.tsv")
 #gtdb arc
-gtdbarc <- read_delim("gtdb_classification/gtdbtk.ar53.summary.tsv")
+gtdbarc <- read_delim("results/FULL_MAGs/dereplicated_MAGs/gtdb_classification/gtdbtk.ar53.summary.tsv")
 
 #checkm2
-checkm <- read_delim("../checkm2_out/quality_report.tsv")
-
-#stats
-stats <- read_delim("complete_stats.tsv")
+checkm <- read_delim("results/FULL_MAGs/checkm2_out/quality_report.tsv")
 
 #coverM
-coverMmean <- read_delim("coverM_mean_output.tsv")
+coverMmean <- read_delim("results/FULL_MAGs/dereplicated_MAGs/coverM_mean_output.tsv")
 #coverM
-coverMrelative <- read_delim("coverM_relative_output.tsv")
+coverMrelative <- read_delim("results/FULL_MAGs/dereplicated_MAGs/coverM_relative_output.tsv")
 ```
 
 #merge gtdb
@@ -72,5 +70,8 @@ mergedtable <- full_join(mergedtable, coverMmean, by = "genome" )
 
 #file out
 ```{r}
-write_excel_csv(mergedtable, "JMF-2511-11_MAGS.xlsx")
+#Consider this instead
+write_xlsx(mergedtable, "results/FULL_MAGs/dereplicated_MAGs/FULLPROJECT_MAGs.xlsx")
 ```
+
+
